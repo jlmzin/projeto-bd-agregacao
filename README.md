@@ -15,14 +15,24 @@ O sistema foi desenvolvido para representar funcionários, seus dependentes, pro
 
 # Diagrama Entidade-Relacionamento (Mermaid)
 
+# Sistema de Gerenciamento de Funcionários, Projetos e Equipamentos
+
+## Descrição do Projeto
+
+Este projeto apresenta a modelagem de um banco de dados utilizando PostgreSQL com foco nos conceitos de:
+
+- Entidade Fraca (Dependência de Existência)
+- Autorelacionamento
+- Agregação
+
+O sistema controla funcionários, seus dependentes, projetos e os equipamentos utilizados durante a participação em projetos.
+
+---
+
+# Diagrama Entidade-Relacionamento
+
 ```mermaid
 erDiagram
-
-    FUNCIONARIO ||--o{ FUNCIONARIO : gerencia
-    FUNCIONARIO ||--o{ DEPENDENTE : possui
-    FUNCIONARIO ||--o{ ALOCACAO : participa
-    PROJETO ||--o{ ALOCACAO : contem
-    ALOCACAO ||--o{ EQUIPAMENTO : utiliza
 
     FUNCIONARIO {
         int id PK
@@ -52,56 +62,33 @@ erDiagram
         string nome_equipamento
         int alocacao_id FK
     }
+
+    FUNCIONARIO ||--o{ FUNCIONARIO : gerencia
+    FUNCIONARIO ||--o{ DEPENDENTE : possui
+    FUNCIONARIO ||--o{ ALOCACAO : participa
+    PROJETO ||--o{ ALOCACAO : recebe
+    ALOCACAO ||--o{ EQUIPAMENTO : utiliza
 ```
 Explicação do Autorelacionamento
 
 O autorelacionamento foi aplicado na entidade FUNCIONARIO.
 
-Cada funcionário pode possuir um supervisor, que também é um funcionário da empresa. Dessa forma, a tabela referencia a si mesma através do campo supervisor_id.
+Um funcionário pode supervisionar outros funcionários da empresa. Para isso, o atributo supervisor_id referencia a própria tabela FUNCIONARIO.
 
-Esse modelo permite representar hierarquias organizacionais, como:
-
-Gerentes
-Supervisores
-Coordenadores
-Subordinados
-
-Exemplo:
-Um gerente pode supervisionar vários funcionários, enquanto cada funcionário possui apenas um supervisor direto.
+Dessa forma, é possível representar a hierarquia organizacional da empresa, como gerentes e subordinados.
 
 Explicação da Agregação
 
-A agregação foi utilizada para resolver o relacionamento entre:
+A agregação foi aplicada através da entidade ALOCACAO.
 
-Funcionários
-Projetos
-Equipamentos
+A tabela ALOCACAO representa o relacionamento entre FUNCIONARIO e PROJETO, registrando quais funcionários participam de quais projetos.
 
-Inicialmente, funcionários trabalham em projetos através da entidade ALOCACAO.
+Os equipamentos não são vinculados diretamente ao funcionário nem ao projeto. Eles são associados à alocação, permitindo identificar qual equipamento foi utilizado por determinado funcionário em um projeto específico.
 
-Depois disso, os equipamentos são vinculados à alocação, e não diretamente ao funcionário ou ao projeto.
-
-Isso resolve um problema importante:
-
-Um mesmo funcionário pode utilizar equipamentos diferentes dependendo do projeto em que está trabalhando.
-
-Exemplo:
-
-João utiliza um notebook no Projeto A
-João utiliza um tablet no Projeto B
-
-Assim, o equipamento fica associado ao contexto da participação do funcionário no projeto.
+Isso evita ambiguidades e representa corretamente o contexto de uso dos equipamentos dentro dos projetos.
 
 Tecnologias Utilizadas
 PostgreSQL
 SQL
-Mermaid Diagram
-GitHub README
-Conceitos Aplicados
-Modelagem Entidade-Relacionamento
-Chaves Primárias e Estrangeiras
-Relacionamentos N:N
-Integridade Referencial
-Entidade Fraca
-Autorelacionamento
-Agregação
+Mermaid
+GitHub
