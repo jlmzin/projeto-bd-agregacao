@@ -1,0 +1,259 @@
+-- =====================================================
+-- SISTEMA DE GERENCIAMENTO DE FUNCIONÁRIOS E PROJETOS
+-- PostgreSQL
+-- =====================================================
+
+-- =====================================================
+-- ETAPA 1 - REMOÇÃO DAS TABELAS
+-- =====================================================
+-- Remove as tabelas caso já existam no banco
+-- Evita erros durante novos testes
+-- =====================================================
+
+DROP TABLE IF EXISTS equipamento CASCADE;
+DROP TABLE IF EXISTS alocacao CASCADE;
+DROP TABLE IF EXISTS dependente CASCADE;
+DROP TABLE IF EXISTS projeto CASCADE;
+DROP TABLE IF EXISTS funcionario CASCADE;
+
+-- =====================================================
+-- ETAPA 2 - CRIAÇÃO DAS TABELAS
+-- =====================================================
+-- Criação das entidades do sistema
+-- =====================================================
+
+-- ==========================================
+-- TABELA FUNCIONARIO
+-- Aplicação do autorelacionamento
+-- ==========================================
+
+CREATE TABLE funcionario (
+    id SERIAL PRIMARY KEY,
+    nome VARCHAR(100) NOT NULL,
+    supervisor_id INTEGER
+);
+
+-- ==========================================
+-- TABELA DEPENDENTE
+-- Entidade fraca
+-- ==========================================
+
+CREATE TABLE dependente (
+    id SERIAL PRIMARY KEY,
+    nome VARCHAR(100) NOT NULL,
+    funcionario_id INTEGER NOT NULL
+);
+
+-- ==========================================
+-- TABELA PROJETO
+-- ==========================================
+
+CREATE TABLE projeto (
+    id SERIAL PRIMARY KEY,
+    nome_projeto VARCHAR(100) NOT NULL
+);
+
+-- ==========================================
+-- TABELA ALOCACAO
+-- Relacionamento N:N
+-- ==========================================
+
+CREATE TABLE alocacao (
+    id SERIAL PRIMARY KEY,
+    funcionario_id INTEGER NOT NULL,
+    projeto_id INTEGER NOT NULL
+);
+
+-- ==========================================
+-- TABELA EQUIPAMENTO
+-- Agregação
+-- ==========================================
+
+CREATE TABLE equipamento (
+    id SERIAL PRIMARY KEY,
+    nome_equipamento VARCHAR(100) NOT NULL,
+    alocacao_id INTEGER NOT NULL
+);
+
+-- =====================================================
+-- ETAPA 3 - RELACIONAMENTOS E CHAVES ESTRANGEIRAS
+-- =====================================================
+-- Criação das restrições de integridade
+-- =====================================================
+
+-- ==========================================
+-- AUTORELACIONAMENTO
+-- FUNCIONARIO -> FUNCIONARIO
+-- ==========================================
+
+ALTER TABLE funcionario
+ADD CONSTRAINT fk_supervisor
+FOREIGN KEY (supervisor_id)
+REFERENCES funcionario(id);
+
+-- ==========================================
+-- DEPENDENTE -> FUNCIONARIO
+-- ON DELETE CASCADE
+-- ==========================================
+
+ALTER TABLE dependente
+ADD CONSTRAINT fk_dependente_funcionario
+FOREIGN KEY (funcionario_id)
+REFERENCES funcionario(id)
+ON DELETE CASCADE;
+
+-- ==========================================
+-- ALOCACAO -> FUNCIONARIO
+-- ==========================================
+
+ALTER TABLE alocacao
+ADD CONSTRAINT fk_alocacao_funcionario
+FOREIGN KEY (funcionario_id)
+REFERENCES funcionario(id);
+
+-- ==========================================
+-- ALOCACAO -> PROJETO
+-- ==========================================
+
+ALTER TABLE alocacao
+ADD CONSTRAINT fk_alocacao_projeto
+FOREIGN KEY (projeto_id)
+REFERENCES projeto(id);
+
+-- ==========================================
+-- EQUIPAMENTO -> ALOCACAO
+-- ==========================================
+
+ALTER TABLE equipamento
+ADD CONSTRAINT fk_equipamento_alocacao
+FOREIGN KEY (alocacao_id)
+REFERENCES alocacao(id);
+
+-- =====================================================
+-- ETAPA 4 - INSERÇÃO DE DADOS
+-- =====================================================
+-- Cadastro de informações no sistema
+-- =====================================================
+
+-- ==========================================
+-- FUNCIONARIOS
+-- ==========================================
+
+INSERT INTO funcionario (nome, supervisor_id)
+VALUES
+('Carlos', NULL),
+('Ana', 1),
+('João', 1);
+
+-- ==========================================
+-- DEPENDENTES
+-- ==========================================
+
+INSERT INTO dependente (nome, funcionario_id)
+VALUES
+('Marina', 2),
+('Pedro', 3);
+
+-- ==========================================
+-- PROJETOS
+-- ==========================================
+
+INSERT INTO projeto (nome_projeto)
+VALUES
+('Sistema ERP'),
+('Aplicativo Mobile');
+
+-- ==========================================
+-- ALOCACOES
+-- ==========================================
+
+INSERT INTO alocacao (funcionario_id, projeto_id)
+VALUES
+(2, 1),
+(3, 2);
+
+-- ==========================================
+-- EQUIPAMENTOS
+-- ==========================================
+
+INSERT INTO equipamento (nome_equipamento, alocacao_id)
+VALUES
+('Notebook Dell', 1),
+('Tablet Samsung', 2);
+
+-- =====================================================
+-- ETAPA 5 - CONSULTAS SELECT
+-- =====================================================
+-- Exibição dos dados armazenados
+-- =====================================================
+
+-- ==========================================
+-- FUNCIONARIO
+-- ==========================================
+
+SELECT * FROM funcionario;
+
+-- ==========================================
+-- DEPENDENTE
+-- ==========================================
+
+SELECT * FROM dependente;
+
+-- ==========================================
+-- PROJETO
+-- ==========================================
+
+SELECT * FROM projeto;
+
+-- ==========================================
+-- ALOCACAO
+-- ==========================================
+
+SELECT * FROM alocacao;
+
+-- ==========================================
+-- EQUIPAMENTO
+-- ==========================================
+
+SELECT * FROM equipamento;
+
+-- =====================================================
+-- ETAPA 6 - CONSULTA COM JOIN
+-- =====================================================
+-- Demonstração da agregação
+-- =====================================================
+
+SELECT
+    f.nome AS funcionario,
+    p.nome_projeto,
+    e.nome_equipamento
+FROM alocacao a
+
+INNER JOIN funcionario f
+    ON a.funcionario_id = f.id
+
+INNER JOIN projeto p
+    ON a.projeto_id = p.id
+
+INNER JOIN equipamento e
+    ON e.alocacao_id = a.id;
+
+-- =====================================================
+-- ETAPA 7 - TESTE DO ON DELETE CASCADE
+-- =====================================================
+-- Demonstração da entidade fraca
+-- =====================================================
+
+-- DELETE FROM funcionario
+-- WHERE id = 2;
+
+-- Após executar:
+-- os dependentes relacionados
+-- serão removidos automaticamente.
+
+-- Verificação:
+-- SELECT * FROM dependente;
+
+-- =====================================================
+-- FIM DO SCRIPT
+-- =====================================================
