@@ -32,6 +32,7 @@ O sistema controla funcionários, seus dependentes, projetos e os equipamentos u
 # Diagrama Entidade-Relacionamento
 
 ```mermaid
+```mermaid
 erDiagram
 
     FUNCIONARIO {
@@ -63,11 +64,14 @@ erDiagram
         int alocacao_id FK
     }
 
-    FUNCIONARIO ||--o{ FUNCIONARIO : gerencia
     FUNCIONARIO ||--o{ DEPENDENTE : possui
+
     FUNCIONARIO ||--o{ ALOCACAO : participa
     PROJETO ||--o{ ALOCACAO : recebe
+
     ALOCACAO ||--o{ EQUIPAMENTO : utiliza
+
+    FUNCIONARIO ||--o{ FUNCIONARIO : supervisiona
 ```
 Explicação do Autorelacionamento
 
