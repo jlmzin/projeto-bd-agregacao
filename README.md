@@ -32,7 +32,6 @@ O sistema controla funcionários, seus dependentes, projetos e os equipamentos u
 # Diagrama Entidade-Relacionamento
 
 ```mermaid
-```mermaid
 erDiagram
 
     FUNCIONARIO {
