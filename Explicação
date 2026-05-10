@@ -1,0 +1,64 @@
+# Explicação Teórica
+
+## Uso do ON DELETE CASCADE na Tabela DEPENDENTE
+
+A tabela `DEPENDENTE` utiliza a cláusula `ON DELETE CASCADE` porque ela representa uma entidade fraca, ou seja, depende da existência de um funcionário para existir no banco de dados.
+
+```sql
+FOREIGN KEY (funcionario_id)
+REFERENCES funcionario(id)
+ON DELETE CASCADE
+
+Isso significa que:
+
+cada dependente está obrigatoriamente ligado a um funcionário;
+se um funcionário for removido, todos os seus dependentes também serão removidos automaticamente.
+
+Essa abordagem evita registros órfãos no banco de dados, garantindo integridade referencial.
+
+Exemplo
+
+Se o funcionário de ID 2 for excluído:
+
+DELETE FROM funcionario
+WHERE id = 2;
+
+todos os dependentes associados ao funcionário 2 serão removidos automaticamente da tabela DEPENDENTE.
+
+Explicação da Agregação
+
+A agregação foi aplicada através da entidade ALOCACAO.
+
+A tabela ALOCACAO representa o relacionamento entre:
+
+FUNCIONARIO
+PROJETO
+
+Ela registra quais funcionários participam de quais projetos.
+
+FUNCIONARIO → ALOCACAO ← PROJETO
+
+A entidade EQUIPAMENTO não se relaciona diretamente com o funcionário nem diretamente com o projeto.
+
+Em vez disso, o equipamento é vinculado à ALOCACAO.
+
+ALOCACAO → EQUIPAMENTO
+
+Dessa forma, o equipamento fica associado ao par:
+
+Funcionário
+Projeto
+
+Isso resolve o problema de contexto de uso dos equipamentos.
+
+Exemplo
+Funcionário	Projeto	Equipamento
+Ana	Sistema ERP	Notebook Dell
+João	Aplicativo Mobile	Tablet Samsung
+
+Nesse cenário:
+
+Ana utiliza um Notebook Dell no projeto Sistema ERP;
+João utiliza um Tablet Samsung no projeto Aplicativo Mobile.
+
+O equipamento está ligado à participação do funcionário no projeto, representada pela tabela ALOCACA
