@@ -95,3 +95,20 @@ PostgreSQL
 SQL
 Mermaid
 GitHub
+
+
+A mudança principal:
+
+trocar "gerencia" por "supervisiona" melhora entendimento
+deixar o autorelacionamento por último melhora o layout automático
+o Mermaid organiza melhor as entidades
+
+Outra pegadinha importante:
+
+professor provavelmente espera perceber que:
+
+FUNCIONARIO ↔ PROJETO
+
+é N:N e precisa da entidade associativa ALOCACAO.
+
+O erro anterior era tentar “esconder” a agregação dentro de equipamento, o que quebrava o conceito correto de modelagem.
